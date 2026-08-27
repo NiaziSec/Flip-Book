@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ICMR 2026 Proceedings Flipbook</title>
 
-  <!-- PDF.js CDN -->
+  <!-- PDF.js Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <!-- Page-Flip Library CDN -->
+  <!-- 3D Page Flip Engine -->
   <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
 
   <style>
@@ -18,128 +18,161 @@
     }
 
     body {
-      background-color: #e5e5e5;
+      background-color: #d8dcdb;
       font-family: Arial, sans-serif;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
       overflow: hidden;
     }
 
-    .flipbook-container {
+    .book-wrapper {
       position: relative;
-      width: 90vw;
-      height: 85vh;
+      width: 95vw;
+      height: 90vh;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
+    /* 3D Book Container & Spine Effect */
     #flipbook {
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+      background-color: #ffffff;
+      position: relative;
+    }
+
+    /* Central Book Spine Shadow */
+    #flipbook::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 30px;
+      height: 100%;
+      transform: translateX(-50%);
+      background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.18) 45%,
+        rgba(0, 0, 0, 0.25) 50%,
+        rgba(0, 0, 0, 0.18) 55%,
+        rgba(0, 0, 0, 0) 100%
+      );
+      pointer-events: none;
+      z-index: 20;
     }
 
     .page {
-      background-color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background-color: #ffffff;
       overflow: hidden;
     }
 
     .page canvas {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: fill;
     }
 
-    .nav-btn {
+    /* Bottom Navigation Arrows (Matching Photo) */
+    .arrow-btn {
       position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(255, 255, 255, 0.85);
-      border: 1px solid #ccc;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      font-size: 24px;
+      bottom: 25px;
+      background: none;
+      border: none;
+      font-size: 32px;
+      color: #333333;
       cursor: pointer;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      z-index: 30;
+      padding: 10px;
+      user-select: none;
+      transition: transform 0.15s ease, color 0.15s ease;
     }
 
-    .nav-btn:hover {
-      background: #ffffff;
-      transform: translateY(-50%) scale(1.1);
+    .arrow-btn:hover {
+      color: #000000;
+      transform: scale(1.2);
     }
 
     #prev-btn { left: 15px; }
     #next-btn { right: 15px; }
 
-    #loading {
+    #loading-screen {
       position: absolute;
-      font-weight: bold;
-      color: #555;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #444444;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      z-index: 100;
     }
   </style>
 </head>
 <body>
 
-  <div class="flipbook-container">
-    <button id="prev-btn" class="nav-btn">&#10094;</button>
-    <div id="loading">Loading ICMR 2026 Proceedings...</div>
+  <div class="book-wrapper">
+    <div id="loading-screen">Rendering 3D Book Spread...</div>
     <div id="flipbook"></div>
-    <button id="next-btn" class="nav-btn">&#10095;</button>
+
+    <!-- Bottom Corner Navigation Arrows -->
+    <button id="prev-btn" class="arrow-btn" aria-label="Previous Page">&#x21A9;</button>
+    <button id="next-btn" class="arrow-btn" aria-label="Next Page">&#x21AA;</button>
   </div>
 
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    // Updated to target your specific PDF filename
     const PDF_URL = 'icmr2026-proceedings.pdf';
 
-    async function initFlipbook() {
-      const flipbookEl = document.getElementById('flipbook');
-      const loadingEl = document.getElementById('loading');
+    async function renderFlipbook() {
+      const flipbookContainer = document.getElementById('flipbook');
+      const loadingScreen = document.getElementById('loading-screen');
 
       try {
         const pdf = await pdfjsLib.getDocument(PDF_URL).promise;
-        loadingEl.style.display = 'none';
 
-        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-          const page = await pdf.getPage(pageNum);
-          const viewport = page.getViewport({ scale: 1.5 });
+        // Render PDF pages onto HTML canvas elements
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const viewport = page.getViewport({ scale: 2.0 });
 
           const pageDiv = document.createElement('div');
           pageDiv.className = 'page';
 
           const canvas = document.createElement('canvas');
-          const context = canvas.getContext('2d');
+          const ctx = canvas.getContext('2d');
           canvas.height = viewport.height;
           canvas.width = viewport.width;
 
           pageDiv.appendChild(canvas);
-          flipbookEl.appendChild(pageDiv);
+          flipbookContainer.appendChild(pageDiv);
 
-          await page.render({ canvasContext: context, viewport: viewport }).promise;
+          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
         }
 
-        const pageFlip = new St.PageFlip(flipbookEl, {
-          width: 550,
-          height: 730,
-          size: 'stretch',
+        loadingScreen.style.display = 'none';
+
+        // Calculate size for two-page spread (Double Page Mode)
+        const containerWidth = Math.min(window.innerWidth * 0.9, 1400);
+        const containerHeight = Math.min(window.innerHeight * 0.85, 900);
+        const singlePageWidth = Math.floor(containerWidth / 2);
+
+        // Initialize 3D Spread Engine
+        const pageFlip = new St.PageFlip(flipbookContainer, {
+          width: singlePageWidth,
+          height: containerHeight,
+          size: 'fixed',
           minWidth: 300,
-          maxWidth: 900,
+          maxWidth: 800,
           minHeight: 400,
-          maxHeight: 1200,
-          maxShadowOpacity: 0.4,
-          showCover: true,
+          maxHeight: 1000,
+          drawShadow: true,
+          maxShadowOpacity: 0.6,
+          showCover: false, // Forces side-by-side 2-page spread mode
+          usePortrait: false, // Prevents single-page fallback on desktop
           mobileScrollSupport: false
         });
 
@@ -148,13 +181,13 @@
         document.getElementById('prev-btn').addEventListener('click', () => pageFlip.flipPrev());
         document.getElementById('next-btn').addEventListener('click', () => pageFlip.flipNext());
 
-      } catch (error) {
-        loadingEl.innerText = 'Error loading icmr2026-proceedings.pdf. Ensure the file is in the root directory.';
-        console.error(error);
+      } catch (err) {
+        loadingScreen.innerText = 'Failed to load PDF. Check filename and path.';
+        console.error(err);
       }
     }
 
-    window.addEventListener('DOMContentLoaded', initFlipbook);
+    window.addEventListener('DOMContentLoaded', renderFlipbook);
   </script>
 </body>
 </html>
