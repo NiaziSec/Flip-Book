@@ -3,39 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Publication Viewer | ICMR 2026 - 23rd International Conference on Manufacturing Research">
-    <title>ICMR 2026 | 23rd International Conference on Manufacturing Research</title>
-
-    <!-- Dependencies: jQuery & DearFlip Flipbook Plugin CDN -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/dearhive/dearflip-js-flipbook@master/dflip/css/dflip.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/dearhive/dearflip-js-flipbook@master/dflip/css/themify-icons.min.css">
-    <script src="https://cdn.jsdelivr.net/gh/dearhive/dearflip-js-flipbook@master/dflip/js/dflip.min.js"></script>
+    <meta name="description" content="ICMR 2026 - 23rd International Conference on Manufacturing Research Proceedings Viewer">
+    <title>ICMR 2026 | Publication Proceedings</title>
 
     <style>
-        html, body {
+        * { box-sizing: border-box; }
+        body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             background-color: #0f172a;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
         }
+        header {
+            background-color: #1e293b;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+        .header-title h1 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .header-title p {
+            margin: 2px 0 0 0;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        .header-actions a {
+            background-color: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .header-actions a:hover {
+            background-color: #2563eb;
+        }
         #viewer-container {
+            flex: 1;
             width: 100%;
-            height: 100vh;
+            background-color: #0f172a;
+            position: relative;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .fallback-notice {
+            display: none;
+            padding: 20px;
+            text-align: center;
+            color: #ef4444;
         }
     </style>
 </head>
 <body>
 
-    <div id="viewer-container">
-        <div class="_df_book" 
-             source="book.pdf" 
-             id="icmr2026_publication_viewer"
-             webgl="true"
-             backgroundcolor="#0f172a">
+    <header>
+        <div class="header-title">
+            <h1>ICMR 2026 Proceedings</h1>
+            <p>23rd International Conference on Manufacturing Research &bull; Astana, Kazakhstan</p>
         </div>
+        <div class="header-actions">
+            <!-- IMPORTANT: Change "icmr2026-proceedings.pdf" to match your exact file name -->
+            <a href="icmr2026-proceedings.pdf" download id="download-btn">Download PDF</a>
+        </div>
+    </header>
+
+    <div id="viewer-container">
+        <!-- Modern built-in browser PDF rendering engine (Instant load, zero lag) -->
+        <iframe src="icmr2026-proceedings.pdf" id="pdf-frame">
+            <div class="fallback-notice">
+                Your browser does not support embedded PDFs. Please <a href="icmr2026-proceedings.pdf">download the PDF</a> to view it.
+            </div>
+        </iframe>
     </div>
 
 </body>
