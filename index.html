@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watermark-Free Publication Viewer</title>
+    <meta name="description" content="Publication Viewer | ICMR 2026 - 23rd International Conference on Manufacturing Research">
+    <title>ICMR 2026 | 23rd International Conference on Manufacturing Research</title>
 
-    <!-- Core Open-Source Scripts via Fast Delivery CDN -->
-    <script src="https://jquery.com"></script>
-    <script src="https://jsdelivr.net"></script>
-    <link rel="stylesheet" href="https://jsdelivr.net">
-    <link rel="stylesheet" href="https://jsdelivr.net">
+    <!-- Dependencies: jQuery & DearFlip Flipbook Plugin CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/dearhive/dearflip-js-flipbook@master/dflip/css/dflip.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/dearhive/dearflip-js-flipbook@master/dflip/css/themify-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/dearhive/dearflip-js-flipbook@master/dflip/js/dflip.min.js"></script>
 
     <style>
-        body, html {
+        html, body {
             margin: 0;
             padding: 0;
+            width: 100%;
             height: 100%;
-            background-color: #2c3e50;
+            background-color: #0f172a;
             overflow: hidden;
         }
         #viewer-container {
@@ -28,15 +30,11 @@
 <body>
 
     <div id="viewer-container">
-        <!-- 
-          The script parses the local filename directly. 
-          Make sure "book.pdf" matches your exact filename.
-        -->
         <div class="_df_book" 
              source="book.pdf" 
-             id="clean_viewer"
+             id="icmr2026_publication_viewer"
              webgl="true"
-             backgroundcolor="#2c3e50">
+             backgroundcolor="#0f172a">
         </div>
     </div>
 
